@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace BOG.Pathways.Server.StorageModels
 {
     public class IpWatch
     {
-        public string IpAddress { get; set; } = string.Empty;
+        public string IpAddress { get; set; } = "8.8.4.4";
         public bool IsWhitelisted { get; set; } = false;
         public int BadTokenTally { get; set; } = 0;
         public DateTime LatestAttempt { get; set; } = DateTime.MinValue;

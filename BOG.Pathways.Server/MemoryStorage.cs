@@ -14,6 +14,7 @@ namespace BOG.Pathways.Server
         public Dictionary<string, IpWatch> IpWatchList { get; set; } = new Dictionary<string, IpWatch>();
         public Dictionary<string, Pathway> PathwayList { get; set; } = new Dictionary<string, Pathway>();
         public Settings Configuration { get; set; } = new Settings { };
+        public Dictionary<string, string> IpCaller = new Dictionary<string, string>();
 
         public MemoryStorage()
         {
@@ -25,7 +26,7 @@ namespace BOG.Pathways.Server
             IpWatchList.Clear();
             foreach (string ip in Configuration.IpWhitelist)
             {
-                IpWatchList.Add(ip, new IpWatch { IpAddress = ip });
+                IpWatchList.Add(ip, new IpWatch { IpAddress = ip, IsWhitelisted = true });
             }
         }
 

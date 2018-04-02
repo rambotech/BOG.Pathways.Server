@@ -1,0 +1,12 @@
+﻿{
+  "SuperAccessToken": "Super",
+  "AdminAccessToken": "Admin",
+  "UserAccessToken": "User",
+  "HttpPortNumber": 5670,
+  "HttpsPortNumber": 5671,
+  "PayloadSizeLimitPathway": 524288,
+  "PayloadCountLimitPathway": 200,
+  "TotalPayloadSizeLimit": 2147483648,
+  "LoggingLevel": 2,
+  "IpWhitelist": [ "127.0.0.0/8", "::1", "172.16.0.0/12", "10.0.0.0/8", "192.168.0.0/16" ]
+}

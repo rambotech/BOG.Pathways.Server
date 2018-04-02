@@ -5,6 +5,9 @@ using System.Threading.Tasks;
 
 namespace BOG.Pathways.Server.StorageModels
 {
+    /// <summary>
+    /// Define the pathway server behavior
+    /// </summary>
     public class Settings
     {
         public string IpAddress { get; set; } = string.Empty;

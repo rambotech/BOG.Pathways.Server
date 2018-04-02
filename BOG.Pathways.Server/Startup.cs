@@ -5,11 +5,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using BOG.Pathways.Server.Helpers;
 using BOG.Pathways.Server.Interface;
+using BOG.Pathways.Server.StorageModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.PlatformAbstractions;
 using Swashbuckle.AspNetCore.Swagger;
 
@@ -17,18 +19,29 @@ namespace BOG.Pathways.Server
 {
     public class Startup
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="configuration"></param>
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+        /// <summary>
+        /// This method gets called by the runtime. Use this method to add services to the container.
+        /// </summary>
+        /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc();
-
+            services.AddOptions();
+            services.Configure<Settings>(Configuration);
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
             {
@@ -43,10 +56,10 @@ namespace BOG.Pathways.Server
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlPath = Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "BOG.Pathways.Server.xml");
                 c.IncludeXmlComments(xmlPath);
-
-                services.AddSingleton<IStorage, MemoryStorage>();
-                services.AddSingleton<Security>();
             });
+
+            services.AddSingleton<IStorage, MemoryStorage>();
+            services.AddSingleton<Security>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

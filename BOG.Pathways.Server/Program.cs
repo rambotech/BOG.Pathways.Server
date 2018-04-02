@@ -18,24 +18,36 @@ namespace BOG.Pathways.Server
     {
         static readonly SimpleInjector.Container container;
 
+        /// <summary>
+        /// Main start class
+        /// </summary>
         static Program()
         {
-            container = new Container();
-
-            container.RegisterSingleton<IStorage, MemoryStorage>();
-            container.RegisterSingleton<Security>();
-
-            container.Verify();
         }
 
+        /// <summary>
+        /// Main start point
+        /// </summary>
+        /// <param name="args"></param>
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            BuildWebHost(args)
+                .Run();
         }
 
+        /// <summary>
+        /// Main start point
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public static IWebHost BuildWebHost(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
-                .Build();
+                .ConfigureLogging((hostingContext, logging) =>
+                {
+                    logging.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    logging.AddConsole();
+                    logging.AddDebug();
+                }).Build();
     }
 }
