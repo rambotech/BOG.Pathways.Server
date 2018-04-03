@@ -23,7 +23,7 @@ namespace BOG.Pathways.Server.Controllers
         private IStorage _storage;
         private Security _security;
         private IOptions<Settings> _settings;
-        private ILogger _logger;
+        private ILogger<AdminController> _logger;
 
         /// <summary>
         /// Instantiate via injection
@@ -32,7 +32,7 @@ namespace BOG.Pathways.Server.Controllers
         /// <param name="security">(injected)</param>
         /// <param name="settings">(injected)</param>
         /// <param name="logger">(injected)</param>
-        public AdminController(IStorage storage, Security security, IOptions<Settings> settings, ILogger logger)
+        public AdminController(IStorage storage, Security security, IOptions<Settings> settings, ILogger<AdminController> logger)
         {
             _storage = storage;
             _security = security;

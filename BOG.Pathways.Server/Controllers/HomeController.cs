@@ -4,12 +4,37 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using BOG.Pathways.Server.Helpers;
+using BOG.Pathways.Server.Interface;
 using BOG.Pathways.Server.Models;
+using BOG.Pathways.Server.StorageModels;
 
 namespace BOG.Pathways.Server.Controllers
 {
     public class HomeController : Controller
     {
+        private IStorage _storage;
+        private Security _security; 
+        private IOptions<Settings> _settings;
+        private ILogger<HomeController> _logger;
+
+        /// <summary>
+        /// Instantiate via injection
+        /// </summary>
+        /// <param name="storage">(injected)</param>
+        /// <param name="security">(injected)</param>
+        /// <param name="settings">(injected)</param>
+        /// <param name="logger">(injected)</param>
+        public HomeController(IStorage storage, Security security, IOptions<Settings> settings, ILogger<HomeController> logger)
+        {
+            _storage = storage;
+            _security = security;
+            _settings = settings;
+            _logger = logger;
+        }
+
         public IActionResult Index()
         {
             return View();

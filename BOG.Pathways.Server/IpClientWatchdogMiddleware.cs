@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace BOG.Pathways.Server
 {
+    /// <summary>
+    /// Middleware to block client IP addresses with repeated credential failures.
+    /// </summary>
     public class IpClientWatchdogMiddleware
     {
         private readonly RequestDelegate _next;
@@ -16,12 +19,22 @@ namespace BOG.Pathways.Server
 
         private object LockPoint = new object();
 
+        /// <summary>
+        /// Instantiation via injection
+        /// </summary>
+        /// <param name="next">the next middleware</param>
+        /// <param name="storage">the storage for settings/pathways/cleints</param>
         public IpClientWatchdogMiddleware(RequestDelegate next, MemoryStorage storage)
         {
             _next = next;
             _storage = storage;
         }
 
+        /// <summary>
+        /// The work to do.
+        /// </summary>
+        /// <param name="httpContext"></param>
+        /// <returns></returns>
         public Task Invoke(HttpContext httpContext)
         {
             lock (LockPoint)
@@ -52,11 +65,19 @@ namespace BOG.Pathways.Server
         }
     }
 
+    /// <summary>
+    /// Extensions for building the middleware
+    /// </summary>
     public static class IpClientWatchdogMiddlewareExtensions
     {
-        public static IApplicationBuilder UseIpClientWatchdogMiddleware(this IApplicationBuilder builder)
+        /// <summary>
+        /// Add the middle ware to the middleware sequence.
+        /// </summary>
+        /// <param name="builder">from startup</param>
+        /// <returns></returns>
+        public static IApplicationBuilder UseIpClientWatchdogMiddleware(this IApplicationBuilder builder, MemoryStorage memoryStorage)
         {
-            return builder.UseMiddleware<IpClientWatchdogMiddleware>();
+            return builder.UseMiddleware<IpClientWatchdogMiddleware>(memoryStorage);
         }
     }
 }

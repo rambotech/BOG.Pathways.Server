@@ -17,15 +17,19 @@ using Swashbuckle.AspNetCore.Swagger;
 
 namespace BOG.Pathways.Server
 {
+    /// <summary>
+    ///  Standard ASP.NET Core starup
+    /// </summary>
     public class Startup
     {
         /// <summary>
         /// 
         /// </summary>
         /// <param name="configuration"></param>
-        public Startup(IConfiguration configuration)
+        public Startup(IConfiguration configuration, IServiceProvider serviceProvider)
         {
             Configuration = configuration;
+            var hostingEnv = serviceProvider.GetService<IHostingEnvironment>();
         }
 
         /// <summary>
@@ -41,7 +45,10 @@ namespace BOG.Pathways.Server
         {
             services.AddMvc();
             services.AddOptions();
+            services.AddSingleton<IStorage, MemoryStorage>();
+            services.AddScoped<Security>();
             services.Configure<Settings>(Configuration);
+
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
             {
@@ -56,14 +63,13 @@ namespace BOG.Pathways.Server
                 // Set the comments path for the Swagger JSON and UI.
                 var xmlPath = Path.Combine(PlatformServices.Default.Application.ApplicationBasePath, "BOG.Pathways.Server.xml");
                 c.IncludeXmlComments(xmlPath);
+                c.DescribeAllEnumsAsStrings();
+                c.DescribeStringEnumsInCamelCase();
             });
-
-            services.AddSingleton<IStorage, MemoryStorage>();
-            services.AddSingleton<Security>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
             {
@@ -77,6 +83,8 @@ namespace BOG.Pathways.Server
 
             app.UseStaticFiles();
 
+            app.UseMiddleware<IpClientWatchdogMiddleware>((MemoryStorage)serviceProvider.GetService(typeof(MemoryStorage)));
+
             app.UseSwagger();
 
             // Enable middleware to serve swagger-ui (HTML, JS, CSS, etc.), specifying the Swagger JSON endpoint.
@@ -84,8 +92,6 @@ namespace BOG.Pathways.Server
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "Pathways Server API v1");
             });
-
-            //app.UseMiddleware<IpClientWatchdogMiddleware>();
 
             app.Use((context, next) =>
             {
