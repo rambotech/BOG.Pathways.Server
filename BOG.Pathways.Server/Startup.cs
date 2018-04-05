@@ -8,6 +8,7 @@ using BOG.Pathways.Server.Interface;
 using BOG.Pathways.Server.StorageModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Server.IISIntegration;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -25,7 +26,8 @@ namespace BOG.Pathways.Server
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="configuration"></param>
+        /// <param name="configuration">(injected)</param>
+        /// <param name="serviceProvider">(injected)</param>
         public Startup(IConfiguration configuration, IServiceProvider serviceProvider)
         {
             Configuration = configuration;
@@ -43,6 +45,7 @@ namespace BOG.Pathways.Server
         /// <param name="services"></param>
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAuthentication("None");
             services.AddMvc();
             services.AddOptions();
             services.AddSingleton<IStorage, MemoryStorage>();
@@ -52,7 +55,8 @@ namespace BOG.Pathways.Server
             // Register the Swagger generator, defining one or more Swagger documents
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new Info {
+                c.SwaggerDoc("v1", new Info
+                {
                     Version = "v1",
                     Title = "Pathways API",
                     Description = "A drop-off and pickup location for application data transfer",
@@ -68,7 +72,12 @@ namespace BOG.Pathways.Server
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
+        /// <summary>
+        /// Build the pipeline.
+        /// </summary>
+        /// <param name="app">(injected)</param>
+        /// <param name="env">(injected)</param>
+        /// <param name="serviceProvider">(injected)</param>
         public void Configure(IApplicationBuilder app, IHostingEnvironment env, IServiceProvider serviceProvider)
         {
             if (env.IsDevelopment())
@@ -83,7 +92,9 @@ namespace BOG.Pathways.Server
 
             app.UseStaticFiles();
 
-            app.UseMiddleware<IpClientWatchdogMiddleware>((MemoryStorage)serviceProvider.GetService(typeof(MemoryStorage)));
+            var x = serviceProvider.GetService<IStorage>();
+
+            app.UseIpClientWatchdogMiddleware();
 
             app.UseSwagger();
 

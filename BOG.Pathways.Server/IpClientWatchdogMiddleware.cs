@@ -1,4 +1,5 @@
-﻿using BOG.Pathways.Server.Models;
+﻿using BOG.Pathways.Server.Interface;
+using BOG.Pathways.Server.Models;
 using BOG.Pathways.Server.StorageModels;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +16,6 @@ namespace BOG.Pathways.Server
     public class IpClientWatchdogMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly MemoryStorage _storage;
 
         private object LockPoint = new object();
 
@@ -23,42 +23,47 @@ namespace BOG.Pathways.Server
         /// Instantiation via injection
         /// </summary>
         /// <param name="next">the next middleware</param>
-        /// <param name="storage">the storage for settings/pathways/cleints</param>
-        public IpClientWatchdogMiddleware(RequestDelegate next, MemoryStorage storage)
+        public IpClientWatchdogMiddleware(RequestDelegate next)
         {
             _next = next;
-            _storage = storage;
         }
 
         /// <summary>
         /// The work to do.
         /// </summary>
-        /// <param name="httpContext"></param>
+        /// <param name="httpContext">the http information</param>
+        /// <param name="storage">the storage for the serer operation</param>
         /// <returns></returns>
-        public Task Invoke(HttpContext httpContext)
+        public Task Invoke(HttpContext httpContext, IStorage storage)
         {
             lock (LockPoint)
             {
                 string ipAddress = httpContext.Connection.RemoteIpAddress.ToString();
-                if (!_storage.IpWatchList.ContainsKey(ipAddress))
+                if (!storage.IpWatchList.ContainsKey(ipAddress))
                 {
-                    _storage.IpWatchList.Add(ipAddress, new IpWatch()
+                    storage.IpWatchList.Add(ipAddress, new IpWatch()
                     {
                         IpAddress = ipAddress,
                         IsWhitelisted = false,
                         LatestAttempt = DateTime.Now
                     });
                 }
-                var ipEntry = _storage.IpWatchList[ipAddress];
-                if (ipEntry.FailedAttempts >= 3 && DateTime.Now.Subtract(ipEntry.LatestAttempt).TotalMinutes < 5)
+                var ipEntry = storage.IpWatchList[ipAddress];
+                if (ipEntry.FailedAttempts >= 3 && DateTime.Now.Subtract(ipEntry.LatestAttempt).TotalMinutes < 1)
                 {
                     httpContext.Response.StatusCode = 451;
                     var buff = System.Text.Encoding.UTF8.GetBytes("You are not playing nice.");
                     httpContext.Response.Body.Write(buff, 0, buff.Length);
+                    ipEntry.LatestAttempt = DateTime.Now;
                     return Task.CompletedTask;
                 }
                 else
                 {
+                    if (ipEntry.FailedAttempts >= 3)
+                    {
+                        ipEntry.FailedAttempts--;
+                    }
+                    ipEntry.LatestAttempt = DateTime.Now;
                     return _next(httpContext);
                 }
             }
@@ -75,9 +80,9 @@ namespace BOG.Pathways.Server
         /// </summary>
         /// <param name="builder">from startup</param>
         /// <returns></returns>
-        public static IApplicationBuilder UseIpClientWatchdogMiddleware(this IApplicationBuilder builder, MemoryStorage memoryStorage)
+        public static IApplicationBuilder UseIpClientWatchdogMiddleware(this IApplicationBuilder builder)
         {
-            return builder.UseMiddleware<IpClientWatchdogMiddleware>(memoryStorage);
+            return builder.UseMiddleware<IpClientWatchdogMiddleware>();
         }
     }
 }

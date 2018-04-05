@@ -10,9 +10,13 @@ using BOG.Pathways.Server.Helpers;
 using BOG.Pathways.Server.Interface;
 using BOG.Pathways.Server.Models;
 using BOG.Pathways.Server.StorageModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BOG.Pathways.Server.Controllers
 {
+    /// <summary>
+    /// Controls the human home page displays.
+    /// </summary>
     public class HomeController : Controller
     {
         private IStorage _storage;
