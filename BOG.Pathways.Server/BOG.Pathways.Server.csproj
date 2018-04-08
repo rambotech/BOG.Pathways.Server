@@ -26,4 +26,8 @@
     <Folder Include="wwwroot\swagger\ui\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\BOG.Pathways.Common\BOG.Pathways.Common.csproj" />
+  </ItemGroup>
+
 </Project>

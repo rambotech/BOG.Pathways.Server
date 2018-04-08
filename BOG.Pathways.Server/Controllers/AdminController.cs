@@ -46,9 +46,9 @@ namespace BOG.Pathways.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("pathway/summary", Name = "AdminPathwaySummary")]
-        [ProducesResponseType(401)]
         [ProducesResponseType(200, Type = typeof(PathwaySummary))]
         [ProducesResponseType(204)]
+        [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         public IActionResult PathwaySummary([FromHeader(Name = "Access-Token")] string accessToken)
         {
@@ -112,5 +112,55 @@ namespace BOG.Pathways.Server.Controllers
             return Ok(clientSummary);
         }
 
+        /// <summary>
+        /// Amnesty: clear the IpWatch list.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("server/amnesty", Name = "AdminAmnesty")]
+        [ProducesResponseType(200)]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(500)]
+        public IActionResult Amnesty([FromHeader(Name = "Access-Token")] string accessToken)
+        {
+            string clientIpAddress = this.HttpContext.Connection.RemoteIpAddress.ToString();
+            _logger.LogInformation($"{clientIpAddress}: Method call to ( /api/admin/server/amnesty )");
+            _storage.IpWatchList[clientIpAddress].MethodCallTally++;
+            switch (_security.ValidateAccessToken(clientIpAddress, accessToken ?? string.Empty))
+            {
+                case Security.AccessLevel.None:
+                case Security.AccessLevel.User:
+                case Security.AccessLevel.Admin:
+                    _storage.IpWatchList[clientIpAddress].FailedAttempts++;
+                    _logger.LogInformation($"{clientIpAddress}: insufficient access token");
+                    return Unauthorized();
+            }
+            _storage.Amnesty();
+            return Ok();
+        }
+
+        /// <summary>
+        /// Reset the server
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet("server/reset", Name = "AdminReset")]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(200, Type = typeof(ClientSummary))]
+        public IActionResult Reset([FromHeader(Name = "Access-Token")] string accessToken)
+        {
+            string clientIpAddress = this.HttpContext.Connection.RemoteIpAddress.ToString();
+            _logger.LogInformation($"{clientIpAddress}: Method call to ( /api/admin/server/reset )");
+            _storage.IpWatchList[clientIpAddress].MethodCallTally++;
+            switch (_security.ValidateAccessToken(clientIpAddress, accessToken ?? string.Empty))
+            {
+                case Security.AccessLevel.None:
+                case Security.AccessLevel.User:
+                case Security.AccessLevel.Admin:
+                    _storage.IpWatchList[clientIpAddress].FailedAttempts++;
+                    _logger.LogInformation($"{clientIpAddress}: insufficient access token");
+                    return Unauthorized();
+            }
+            _storage.Reset();
+            return Ok();
+        }
     }
 }

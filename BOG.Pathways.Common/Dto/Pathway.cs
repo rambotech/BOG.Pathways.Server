@@ -1,17 +1,18 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace BOG.Pathways.Server.StorageModels
+namespace BOG.Pathways.Common.Dto
 {
-    public class Pathway
+    /// <summary>
+    /// Container for pathway request data to server
+    /// </summary>
+    public class CreatePathwayRequest
     {
-        // Config
         [JsonProperty]
-        public string Name { get; set; } = string.Empty;
+        public string Name { get; set; }
         [JsonProperty]
         public string ReadToken { get; set; } = string.Empty;
         [JsonProperty]
@@ -24,8 +25,31 @@ namespace BOG.Pathways.Server.StorageModels
         public int MaxReferencesCount { get; set; } = 10;
         [JsonProperty]
         public Int64 MaxTotalReferencesSize { get; set; } = 5000000;
+    }
 
-        // Operational Tracking
+    public class CreatePathwayResponse
+    {
+        [JsonProperty]
+        public string Name { get; set; }
+        [JsonProperty]
+        public DateTime Created { get; set; }
+    }
+
+    /// <summary>
+    /// Container for pathway response to clinet.
+    /// </summary>
+    public class GetPathwayResponse
+    {
+        [JsonProperty]
+        public string Name { get; set; } = string.Empty;
+        [JsonProperty]
+        public int MaxPayloadsCount { get; set; } = 200;
+        [JsonProperty]
+        public Int64 MaxTotalPayloadsSize { get; set; } = 50000000;
+        [JsonProperty]
+        public int MaxReferencesCount { get; set; } = 10;
+        [JsonProperty]
+        public Int64 MaxTotalReferencesSize { get; set; } = 5000000;
         [JsonProperty]
         public DateTime Created { get; set; } = DateTime.Now;
         [JsonProperty]
@@ -64,18 +88,22 @@ namespace BOG.Pathways.Server.StorageModels
         [JsonProperty]
         public DateTime ReferenceLastWriteOn { get; set; } = DateTime.MinValue;
 
-        [JsonIgnore]
-        public ConcurrentQueue<Payload> Payloads { get; set; } = new ConcurrentQueue<Payload>();
         [JsonProperty]
-        public int PayloadsCount { get { return Payloads.Count; } }
+        public int PayloadsCount { get; set; } = 0;
         [JsonProperty]
         public Int64 PayloadsSize { get; set; } = 0;
 
-        [JsonIgnore]
-        public ConcurrentDictionary<string, Payload> References { get; set; } = new ConcurrentDictionary<string, Payload>();
         [JsonProperty]
-        public int ReferencesCount { get { return References.Count; } }
+        public int ReferencesCount { get; set; } = 0;
         [JsonProperty]
         public Int64 ReferencesSize { get; set; } = 0;
+    }
+
+    /// <summary>
+    /// Container for pathway response to clinet.
+    /// </summary>
+    public class GetPathwayListResponse
+    {
+        List<GetPathwayResponse> PathwayList = new List<GetPathwayResponse>();
     }
 }

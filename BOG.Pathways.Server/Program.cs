@@ -16,8 +16,6 @@ namespace BOG.Pathways.Server
 {
     public class Program
     {
-        static readonly SimpleInjector.Container container;
-
         /// <summary>
         /// Main start class
         /// </summary>

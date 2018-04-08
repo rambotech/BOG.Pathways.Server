@@ -139,7 +139,7 @@ namespace BOG.Pathways.Server.Helpers
         /// <returns>true if valid pattern.</returns>
         public bool IsValidId(string id)
         {
-            var isValid = true;
+            var isValid = id.Length > 0 && id.Length <= 30;
 
             for (var index = 0; isValid && index < id.Length; index++)
             {

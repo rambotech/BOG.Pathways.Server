@@ -1,6 +1,8 @@
-﻿using BOG.Pathways.Server.Interface;
+﻿using BOG.Pathways.Common.Dto;
+using BOG.Pathways.Server.Interface;
 using BOG.Pathways.Server.Models;
 using BOG.Pathways.Server.StorageModels;
+using BOG.Pathways.Server.Helpers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System;
@@ -52,7 +54,10 @@ namespace BOG.Pathways.Server
                 if (ipEntry.FailedAttempts >= 3 && DateTime.Now.Subtract(ipEntry.LatestAttempt).TotalMinutes < 1)
                 {
                     httpContext.Response.StatusCode = 451;
-                    var buff = System.Text.Encoding.UTF8.GetBytes("You are not playing nice.");
+                    var buff = System.Text.Encoding.UTF8.GetBytes(Serializer<ErrorResponse>.ToJson(new ErrorResponse {
+                        ErrorLookup = 0,
+                        ErrorMessage = "You are not playing nice."
+                    }));
                     httpContext.Response.Body.Write(buff, 0, buff.Length);
                     ipEntry.LatestAttempt = DateTime.Now;
                     return Task.CompletedTask;
