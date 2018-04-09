@@ -12,6 +12,12 @@ namespace BOG.Pathways.Server.Entity
         {
             new ErrorResponse
             {
+                ErrorLookup = -1,
+                ErrorMessage = "You are not playing nice",
+                Notes = "You need credentials to access this site's methods"
+            },
+            new ErrorResponse
+            {
                 ErrorLookup = 0,
                 ErrorMessage = "success",
                 Notes = null
@@ -31,6 +37,46 @@ namespace BOG.Pathways.Server.Entity
             {
                 ErrorLookup = 3,
                 ErrorMessage = "pathway identifier not found."
+            },
+            new ErrorResponse
+            {
+                ErrorLookup = 4,
+                ErrorMessage = "site payload maximum count reached."
+            },
+            new ErrorResponse
+            {
+                ErrorLookup = 5,
+                ErrorMessage = "pathway payload area already has the maximum size in use."
+            },
+            new ErrorResponse
+            {
+                ErrorLookup = 6,
+                ErrorMessage = "pathway payload area is empty."
+            },
+            new ErrorResponse
+            {
+                ErrorLookup = 6,
+                ErrorMessage = "pathway reference storage is already at capacity."
+            },
+            new ErrorResponse
+            {
+                ErrorLookup = 7,
+                ErrorMessage = "pathway reference storage is empty."
+            },
+            new ErrorResponse
+            {
+                ErrorLookup = 8,
+                ErrorMessage = "pathway deposit requires valid pathway token for write."
+            },
+            new ErrorResponse
+            {
+                ErrorLookup = 9,
+                ErrorMessage = "pathway withdrawal requires valid pathway token for read."
+            },
+            new ErrorResponse
+            {
+                ErrorLookup = 10,
+                ErrorMessage = "pathway withdrawal failed after 3 tries."
             }
         };
 

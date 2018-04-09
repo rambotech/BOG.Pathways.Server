@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BOG.Pathways.Server.Entity;
 
 namespace BOG.Pathways.Server
 {
@@ -54,10 +55,7 @@ namespace BOG.Pathways.Server
                 if (ipEntry.FailedAttempts >= 3 && DateTime.Now.Subtract(ipEntry.LatestAttempt).TotalMinutes < 1)
                 {
                     httpContext.Response.StatusCode = 451;
-                    var buff = System.Text.Encoding.UTF8.GetBytes(Serializer<ErrorResponse>.ToJson(new ErrorResponse {
-                        ErrorLookup = 0,
-                        ErrorMessage = "You are not playing nice."
-                    }));
+                    var buff = System.Text.Encoding.UTF8.GetBytes(Serializer<ErrorResponse>.ToJson(ErrorResponseManifest.Get(-1)));
                     httpContext.Response.Body.Write(buff, 0, buff.Length);
                     ipEntry.LatestAttempt = DateTime.Now;
                     return Task.CompletedTask;

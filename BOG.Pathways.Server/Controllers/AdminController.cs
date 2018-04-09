@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using BOG.Pathways.Common.Dto;
 using BOG.Pathways.Server.Helpers;
 using BOG.Pathways.Server.Interface;
 using BOG.Pathways.Server.Materialized;
@@ -47,7 +48,7 @@ namespace BOG.Pathways.Server.Controllers
         /// <returns></returns>
         [HttpGet("pathway/summary", Name = "AdminPathwaySummary")]
         [ProducesResponseType(200, Type = typeof(PathwaySummary))]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(204, Type = typeof(ErrorResponse))]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         public IActionResult PathwaySummary([FromHeader(Name = "Access-Token")] string accessToken)
@@ -86,7 +87,7 @@ namespace BOG.Pathways.Server.Controllers
         [HttpGet("client/summary", Name = "AdminClientSummary")]
         [ProducesResponseType(401)]
         [ProducesResponseType(200, Type = typeof(ClientSummary))]
-        [ProducesResponseType(204)]
+        [ProducesResponseType(204, Type = typeof(ErrorResponse))]
         [ProducesResponseType(500)]
         public IActionResult Summary([FromHeader(Name = "Access-Token")] string accessToken)
         {
@@ -117,7 +118,7 @@ namespace BOG.Pathways.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("server/amnesty", Name = "AdminAmnesty")]
-        [ProducesResponseType(200)]
+        [ProducesResponseType(200, Type = typeof(ErrorResponse))]
         [ProducesResponseType(401)]
         [ProducesResponseType(500)]
         public IActionResult Amnesty([FromHeader(Name = "Access-Token")] string accessToken)
@@ -143,8 +144,9 @@ namespace BOG.Pathways.Server.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpGet("server/reset", Name = "AdminReset")]
-        [ProducesResponseType(401)]
         [ProducesResponseType(200, Type = typeof(ClientSummary))]
+        [ProducesResponseType(401)]
+        [ProducesResponseType(500)]
         public IActionResult Reset([FromHeader(Name = "Access-Token")] string accessToken)
         {
             string clientIpAddress = this.HttpContext.Connection.RemoteIpAddress.ToString();

@@ -12,7 +12,7 @@ namespace BOG.Pathways.Common.Dto
     public class CreatePathwayRequest
     {
         [JsonProperty]
-        public string Name { get; set; }
+        public string Id { get; set; }
         [JsonProperty]
         public string ReadToken { get; set; } = string.Empty;
         [JsonProperty]

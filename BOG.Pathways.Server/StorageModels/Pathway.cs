@@ -11,7 +11,7 @@ namespace BOG.Pathways.Server.StorageModels
     {
         // Config
         [JsonProperty]
-        public string Name { get; set; } = string.Empty;
+        public string Id { get; set; } = string.Empty;
         [JsonProperty]
         public string ReadToken { get; set; } = string.Empty;
         [JsonProperty]
